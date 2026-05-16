@@ -5,8 +5,11 @@ pipeline {
 
         stage('Clone Code') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
+                git(
+                    branch: 'main',
+                    url: 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
+                )
             }
         }
     }
+}
