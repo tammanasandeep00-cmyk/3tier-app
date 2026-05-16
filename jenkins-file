@@ -11,5 +11,11 @@ pipeline {
                 )
             }
         }
+
+        stage('Install Backend Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
     }
 }
