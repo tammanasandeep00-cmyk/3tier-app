@@ -23,5 +23,14 @@ pipeline {
                 '''
             }
         }
+
+        stage('Build Frontend') {
+            steps {
+                sh '''
+                    npm install
+                    npm run build
+                '''
+            }
+        }
     }
 }
