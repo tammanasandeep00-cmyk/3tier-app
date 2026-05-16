@@ -3,24 +3,6 @@ pipeline {
 
     stages {
 
-        stage('Install NodeJS on Amazon Linux') {
-            steps {
-                sh '''
-                    sudo yum update -y
-
-                    # Install NodeSource repository
-                    curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-
-                    # Install Node.js and npm
-                    sudo yum install -y nodejs
-
-                    # Verify installation
-                    node -v
-                    npm -v
-                '''
-            }
-        }
-
         stage('Clone Code') {
             steps {
                 git(
@@ -30,9 +12,15 @@ pipeline {
             }
         }
 
-        stage('Install Backend Dependencies') {
+        stage('Install NodeJS and npm') {
             steps {
-                sh 'npm install'
+                sh '''
+                    sudo dnf update -y
+                    sudo dnf install nodejs npm -y
+
+                    node -v
+                    npm -v
+                '''
             }
         }
     }
