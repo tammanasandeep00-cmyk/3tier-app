@@ -3,32 +3,32 @@ pipeline {
 
     stages {
 
-        stage('Clone Code') {
+        stage('Checkout Code') {
             steps {
-                git(
-                    branch: 'main',
-                    url: 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
-                )
+                git branch: 'main',
+                url: 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
             }
         }
 
-        stage('Install NodeJS and npm') {
+        stage('Install Node Modules Manually') {
             steps {
                 sh '''
-                    sudo dnf update -y
-                    sudo dnf install nodejs npm -y
-
                     node -v
                     npm -v
+
+                    # initialize project (creates temporary package.json in workspace)
+                    npm init -y
+
+                    # install dependencies directly
+                    npm install express cors
                 '''
             }
         }
 
-        stage('Build Frontend') {
+        stage('Run Application') {
             steps {
                 sh '''
-                    npm install
-                    npm run build
+                    nohup node server.js > app.log 2>&1 &
                 '''
             }
         }
