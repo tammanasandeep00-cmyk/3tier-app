@@ -10,25 +10,58 @@ pipeline {
             }
         }
 
-        stage('Install Node Modules Manually') {
+        stage('Install Backend Dependencies (No package.json)') {
             steps {
                 sh '''
                     node -v
                     npm -v
 
-                    # initialize project (creates temporary package.json in workspace)
                     npm init -y
-
-                    # install dependencies directly
                     npm install express cors
                 '''
             }
         }
 
-        stage('Run Application') {
+        stage('Start Backend') {
             steps {
                 sh '''
                     nohup node server.js > app.log 2>&1 &
+                '''
+            }
+        }
+
+        stage('Check Frontend Folder') {
+            steps {
+                sh '''
+                    ls -la
+                '''
+            }
+        }
+
+        stage('Build Frontend (only if exists)') {
+            steps {
+                sh '''
+                    if [ -d "frontend" ]; then
+                        cd frontend
+                        npm install
+                        npm run build
+                    else
+                        echo "Frontend folder not found - skipping build"
+                    fi
+                '''
+            }
+        }
+
+        stage('Deploy Frontend') {
+            steps {
+                sh '''
+                    if [ -d "frontend/build" ]; then
+                        echo "Deploying frontend..."
+                        sudo rm -rf /var/www/html/* || true
+                        sudo cp -r frontend/build/* /var/www/html/ || true
+                    else
+                        echo "No build folder found - skipping deploy"
+                    fi
                 '''
             }
         }
