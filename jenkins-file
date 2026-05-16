@@ -22,10 +22,20 @@ pipeline {
             }
         }
 
-        stage('Start Backend') {
+        stage('Install PM2') {
             steps {
                 sh '''
-                    nohup node server.js > app.log 2>&1 &
+                    sudo npm install -g pm2
+                '''
+            }
+        }
+
+        stage('Start Backend with PM2') {
+            steps {
+                sh '''
+                    pm2 delete app || true
+                    pm2 start server.js --name app
+                    pm2 save
                 '''
             }
         }
@@ -38,7 +48,7 @@ pipeline {
             }
         }
 
-        stage('Build Frontend (only if exists)') {
+        stage('Build Frontend (if exists)') {
             steps {
                 sh '''
                     if [ -d "frontend" ]; then
@@ -56,7 +66,6 @@ pipeline {
             steps {
                 sh '''
                     if [ -d "frontend/build" ]; then
-                        echo "Deploying frontend..."
                         sudo rm -rf /var/www/html/* || true
                         sudo cp -r frontend/build/* /var/www/html/ || true
                     else
