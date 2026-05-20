@@ -20,8 +20,8 @@ pipeline {
             }
         }
 
-        stage('Start Backend with PM2') {
-            steps {
+    }
+}
                 sh '''
                     pm2 describe app > /dev/null 2>&1
                     if [ $? -eq 0 ]; then
