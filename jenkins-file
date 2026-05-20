@@ -10,22 +10,12 @@ pipeline {
             }
         }
 
-        stage('Install Backend Dependencies (No package.json)') {
+        stage('Install Backend Dependencies') {
             steps {
                 sh '''
                     node -v
                     npm -v
-
-                    npm init -y
-                    npm install express cors
-                '''
-            }
-        }
-
-        stage('Install PM2') {
-            steps {
-                sh '''
-                    sudo npm install -g pm2
+                    npm install
                 '''
             }
         }
@@ -40,7 +30,7 @@ pipeline {
             }
         }
 
-        stage('Check Frontend Folder') {
+        stage('Verify Project Files') {
             steps {
                 sh '''
                     ls -la
@@ -66,8 +56,8 @@ pipeline {
             steps {
                 sh '''
                     if [ -d "frontend/build" ]; then
-                        sudo rm -rf /var/www/html/* || true
-                        sudo cp -r frontend/build/* /var/www/html/ || true
+                        sudo rm -rf /var/www/html/*
+                        sudo cp -r frontend/build/* /var/www/html/
                     else
                         echo "No build folder found - skipping deploy"
                     fi
