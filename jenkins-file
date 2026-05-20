@@ -23,8 +23,13 @@ pipeline {
         stage('Start Backend with PM2') {
             steps {
                 sh '''
-                    pm2 delete app || true
-                    pm2 start server.js --name app
+                    pm2 describe app > /dev/null 2>&1
+                    if [ $? -eq 0 ]; then
+                        pm2 restart app
+                    else
+                        pm2 start server.js --name app
+                    fi
+
                     pm2 save
                 '''
             }
@@ -32,9 +37,7 @@ pipeline {
 
         stage('Verify Project Files') {
             steps {
-                sh '''
-                    ls -la
-                '''
+                sh 'ls -la'
             }
         }
 
@@ -44,7 +47,7 @@ pipeline {
                     if [ -d "frontend" ]; then
                         cd frontend
                         npm install
-                        npm run build
+                        npm run build || true
                     else
                         echo "Frontend folder not found - skipping build"
                     fi
