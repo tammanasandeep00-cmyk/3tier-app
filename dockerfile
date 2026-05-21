@@ -1,20 +1,19 @@
-# Use official Node.js image
-FROM node:18
+version: '3'
 
-# Set working directory inside container
-WORKDIR /app
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
 
-# Copy package files first
-COPY package*.json ./
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
 
-# Install dependencies
-RUN npm install
-
-# Copy all project files
-COPY . .
-
-# Expose your app port (change if needed)
-EXPOSE 3000
-
-# Start the server
-CMD ["node", "server.js"]
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
