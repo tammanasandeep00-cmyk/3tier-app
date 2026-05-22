@@ -1,71 +1,23 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
-
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main',
-                url: 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
-            }
-        }
-
-        stage('Install Backend Dependencies') {
-            steps {
-                sh '''
-                    node -v
-                    npm -v
-                    npm install
-                '''
-            }
-        }
-
+  stages {
+    stage('Checkout') {
+      steps {
+        git 'https://github.com/your-repo.git'
+      }
     }
-}
-                sh '''
-                    pm2 describe app > /dev/null 2>&1
-                    if [ $? -eq 0 ]; then
-                        pm2 restart app
-                    else
-                        pm2 start server.js --name app
-                    fi
 
-                    pm2 save
-                '''
-            }
-        }
-
-        stage('Verify Project Files') {
-            steps {
-                sh 'ls -la'
-            }
-        }
-
-        stage('Build Frontend (if exists)') {
-            steps {
-                sh '''
-                    if [ -d "frontend" ]; then
-                        cd frontend
-                        npm install
-                        npm run build || true
-                    else
-                        echo "Frontend folder not found - skipping build"
-                    fi
-                '''
-            }
-        }
-
-        stage('Deploy Frontend') {
-            steps {
-                sh '''
-                    if [ -d "frontend/build" ]; then
-                        sudo rm -rf /var/www/html/*
-                        sudo cp -r frontend/build/* /var/www/html/
-                    else
-                        echo "No build folder found - skipping deploy"
-                    fi
-                '''
-            }
-        }
+    stage('Build Docker') {
+      steps {
+        sh 'docker build -t myapp .'
+      }
     }
+
+    stage('Run Container') {
+      steps {
+        sh 'docker run -d -p 3000:3000 myapp || true'
+      }
+    }
+  }
 }
