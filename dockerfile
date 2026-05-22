@@ -1,18 +1,12 @@
-version: '3'
-services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "80:80"
+FROM node:18
 
-  backend:
-    build: ./backend
-    ports:
-      - "5000:5000"
-    depends_on:
-      - mongo
+WORKDIR /app
 
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
