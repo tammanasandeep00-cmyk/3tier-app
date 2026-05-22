@@ -4,7 +4,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git 'https://github.com/your-repo.git'
+        git 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
       }
     }
 
