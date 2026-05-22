@@ -2,21 +2,28 @@ pipeline {
   agent any
 
   stages {
+
     stage('Checkout') {
       steps {
-        git 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
+        git branch: 'main', url: 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
       }
     }
 
-    stage('Build Docker') {
+    stage('Build Docker Image') {
       steps {
         sh 'docker build -t myapp .'
       }
     }
 
+    stage('Stop Old Container') {
+      steps {
+        sh 'docker rm -f myapp || true'
+      }
+    }
+
     stage('Run Container') {
       steps {
-        sh 'docker run -d -p 3000:3000 myapp || true'
+        sh 'docker run -d --name myapp -p 3000:3000 myapp'
       }
     }
   }
