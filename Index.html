@@ -1,171 +1,144 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Indian Recipes</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family: Arial, sans-serif;
-    }
+<title>Recipe Application</title>
 
-    body{
-      background:#fff8f0;
-      color:#333;
-    }
+<style>
+body{
+    margin:0;
+    padding:20px;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f5f5;
+}
 
-    header{
-      background:#ff6b35;
-      color:white;
-      padding:20px;
-      text-align:center;
-    }
+header{
+    background:#2c3e50;
+    color:white;
+    text-align:center;
+    padding:20px;
+    border-radius:10px;
+}
 
-    nav{
-      background:#222;
-      padding:10px;
-      text-align:center;
-    }
+#status{
+    margin:20px 0;
+    font-weight:bold;
+    color:green;
+}
 
-    nav a{
-      color:white;
-      text-decoration:none;
-      margin:0 15px;
-      font-size:18px;
-    }
+.container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+}
 
-    .hero{
-      height:350px;
-      background:linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
-      url('https://images.unsplash.com/photo-1504674900247-0877df9cc836');
-      background-size:cover;
-      background-position:center;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      color:white;
-      text-align:center;
-    }
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
 
-    .hero h1{
-      font-size:50px;
-    }
+.card h2{
+    color:#3498db;
+}
 
-    .container{
-      padding:40px;
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:20px;
-    }
+.card p{
+    line-height:1.6;
+}
 
-    .card{
-      background:white;
-      border-radius:10px;
-      overflow:hidden;
-      box-shadow:0 4px 10px rgba(0,0,0,0.1);
-      transition:0.3s;
-    }
+.footer{
+    margin-top:40px;
+    text-align:center;
+    color:#555;
+}
+</style>
 
-    .card:hover{
-      transform:translateY(-5px);
-    }
-
-    .card img{
-      width:100%;
-      height:200px;
-      object-fit:cover;
-    }
-
-    .card-content{
-      padding:20px;
-    }
-
-    .card-content h3{
-      margin-bottom:10px;
-      color:#ff6b35;
-    }
-
-    .btn{
-      display:inline-block;
-      margin-top:10px;
-      padding:10px 15px;
-      background:#ff6b35;
-      color:white;
-      text-decoration:none;
-      border-radius:5px;
-    }
-
-    footer{
-      background:#222;
-      color:white;
-      text-align:center;
-      padding:15px;
-      margin-top:30px;
-    }
-  </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>Indian Recipes</h1>
-    <p>Easy & Delicious Homemade Dishes</p>
-  </header>
+<header>
 
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">Recipes</a>
-    <a href="#">About</a>
-    <a href="#">Contact</a>
-  </nav>
+<h1>AWS 3-Tier Recipe Application</h1>
 
-  <section class="hero">
-    <div>
-      <h1>Cook Tasty Indian Food</h1>
-      <p>Simple recipes with ingredients available at home</p>
-    </div>
-  </section>
+<p>Frontend • Backend • MySQL Database</p>
 
-  <section class="container">
+</header>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0" alt="Biryani">
-      <div class="card-content">
-        <h3>Veg Biryani</h3>
-        <p>Easy one-pot flavorful rice dish.</p>
-        <a href="#" class="btn">Read More</a>
-      </div>
-    </div>
+<div id="status">
+Loading recipes...
+</div>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950" alt="Dosa">
-      <div class="card-content">
-        <h3>Masala Dosa</h3>
-        <p>Crispy dosa with spicy potato filling.</p>
-        <a href="#" class="btn">Read More</a>
-      </div>
-    </div>
+<div class="container" id="recipes"></div>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19" alt="Paneer">
-      <div class="card-content">
-        <h3>Paneer Butter Masala</h3>
-        <p>Rich creamy curry loved by everyone.</p>
-        <a href="#" class="btn">Read More</a>
-      </div>
-    </div>
+<div class="footer">
 
-  </section>
+<p>Frontend : Nginx</p>
 
-  <footer>
-    <p>© 2026 Indian Recipes | Designed with HTML & CSS</p>
-  </footer>
+<p>Backend : Node.js + Express</p>
+
+<p>Database : MySQL</p>
+
+</div>
+
+<script>
+
+const API="http://10.0.2.208:5000/api/recipes";
+
+fetch(API)
+
+.then(response=>response.json())
+
+.then(data=>{
+
+document.getElementById("status").innerHTML="Backend Connected Successfully";
+
+const container=document.getElementById("recipes");
+
+container.innerHTML="";
+
+data.forEach(recipe=>{
+
+container.innerHTML+=`
+
+<div class="card">
+
+<h2>${recipe.name}</h2>
+
+<p><b>Ingredients</b></p>
+
+<p>${recipe.ingredients}</p>
+
+<p><b>Instructions</b></p>
+
+<p>${recipe.instructions}</p>
+
+<p><b>Created</b></p>
+
+<p>${recipe.created_at}</p>
+
+</div>
+
+`;
+
+});
+
+})
+
+.catch(error=>{
+
+document.getElementById("status").innerHTML="Cannot connect to Backend";
+
+console.log(error);
+
+});
+
+</script>
 
 </body>
+
 </html>
-```
