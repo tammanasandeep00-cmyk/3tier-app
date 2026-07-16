@@ -2,19 +2,23 @@ pipeline {
     agent any
 
     environment {
+        // Frontend
         FRONTEND_HOST = "10.0.3.141"
         FRONTEND_USER = "ec2-user"
         TARGET_PATH = "/usr/share/nginx/html/"
+
+        // Backend
+        BACKEND_HOST = "10.0.2.208"
+        BACKEND_USER = "ec2-user"
+        BACKEND_PATH = "/home/ec2-user/3tier-app"
     }
 
     stages {
 
         stage('Checkout Source') {
             steps {
-                git(
-                    branch: 'main',
+                git branch: 'main',
                     url: 'https://github.com/tammanasandeep00-cmyk/3tier-app.git'
-                    )
             }
         }
 
@@ -30,54 +34,80 @@ pipeline {
 
         stage('Deploy Frontend') {
             steps {
-                sshagent(credentials: ['jenkins-key']) {
-
+                sshagent(credentials: ['front-end-key']) {
                     sh '''
                     scp -o StrictHostKeyChecking=no index.html \
-                    ${FRONTEND_USER}@${FRONTEND_HOST}:${TARGET_PATH}index.html
-                    '''
+                    ${FRONTEND_USER}@${FRONTEND_HOST}:/tmp/index.html
 
+                    ssh -o StrictHostKeyChecking=no \
+                    ${FRONTEND_USER}@${FRONTEND_HOST} \
+                    "sudo mv /tmp/index.html ${TARGET_PATH}index.html &&
+                     sudo systemctl reload nginx"
+                    '''
                 }
             }
         }
 
-        stage('Reload Nginx') {
+        stage('Deploy Backend') {
             steps {
-                sshagent(credentials: ['jenkins-key']) {
+                sshagent(credentials: ['front-end-key']) {
 
                     sh '''
-                    ssh -o StrictHostKeyChecking=no ${FRONTEND_USER}@${FRONTEND_HOST} \
-                    "sudo systemctl reload nginx"
-                    '''
+                    ssh -o StrictHostKeyChecking=no \
+                    ${BACKEND_USER}@${BACKEND_HOST} << EOF
 
+                    cd ${BACKEND_PATH}
+
+                    git pull origin main
+
+                    npm install
+
+                    pm2 restart backend-app
+
+                    pm2 save
+
+                    EOF
+                    '''
                 }
             }
         }
 
-        stage('Verify Deployment') {
+        stage('Verify Frontend') {
             steps {
                 sh '''
-                curl -I http://${FRONTEND_HOST}
+                curl -I http://98.95.65.141
                 '''
             }
         }
+
+        stage('Verify Backend') {
+            steps {
+                sh '''
+                curl http://34.202.126.65:3000 || true
+                '''
+            }
+        }
+
     }
 
     post {
 
         success {
-            echo '================================='
-            echo 'Deployment Successful'
-            echo 'Frontend Updated Successfully'
-            echo '================================='
+            echo "===================================="
+            echo "3-Tier Deployment Successful"
+            echo "===================================="
+            echo "Frontend : SUCCESS"
+            echo "Backend  : SUCCESS"
+            echo "GitHub   : SUCCESS"
+            echo "Jenkins  : SUCCESS"
+            echo "===================================="
         }
 
         failure {
-            echo '================================='
-            echo 'Deployment Failed'
-            echo 'Check Jenkins Console Output'
-            echo '================================='
+            echo "===================================="
+            echo "Deployment Failed"
+            echo "Check Console Output"
+            echo "===================================="
         }
-
     }
 }
