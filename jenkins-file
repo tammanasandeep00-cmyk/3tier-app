@@ -53,17 +53,17 @@ pipeline {
                 sshagent(credentials: ['jenkins-key']) {
 
                     sh """
-                    ssh -o StrictHostKeyChecking=no ${BACKEND_USER}@${BACKEND_HOST} <<'EOF'
-                    cd ${BACKEND_PATH}
+                    ssh -o StrictHostKeyChecking=no ${BACKEND_USER}@${BACKEND_HOST} '
+                    cd ${BACKEND_PATH} &&
 
-                    git pull origin main
+                    git pull origin main &&
 
-                    npm install
+                    npm install &&
 
-                    pm2 restart backend-app
+                    pm2 restart backend-app &&
 
                     pm2 save
-                    EOF
+                   '
                     """
                   }
                 }
