@@ -48,21 +48,26 @@ pipeline {
             }
         }
 
-         stage('Deploy Backend') {
+        stage('Deploy Backend') {
             steps {
                 sshagent(credentials: ['jenkins-key']) {
+
                     sh """
-                    ssh -o StrictHostKeyChecking=no ${BACKEND_USER}@${BACKEND_HOST} '
-                    cd ${BACKEND_PATH} &&
-                    git pull origin main &&
-                    npm install &&
-                    pm2 restart backend-app &&
+                    ssh -o StrictHostKeyChecking=no ${BACKEND_USER}@${BACKEND_HOST} <<'EOF'
+                    cd ${BACKEND_PATH}
+
+                    git pull origin main
+
+                    npm install
+
+                    pm2 restart backend-app
+
                     pm2 save
-                    '
+                    EOF
                     """
+                  }
                 }
             }
-        }
 
         stage('Verify Frontend') {
             steps {
@@ -75,7 +80,7 @@ pipeline {
         stage('Verify Backend') {
             steps {
                 sh '''
-                curl http://34.202.126.65:3000 || true
+                curl http://34.202.126.65:3000 
                 '''
             }
         }
