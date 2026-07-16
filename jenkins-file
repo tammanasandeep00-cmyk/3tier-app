@@ -11,8 +11,8 @@ pipeline {
 
         stage('Checkout Source') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/tammanasandeep00-cmyk/3tier-app.git'
+                git (branch: 'main',
+                    url: 'https://github.com/tammanasandeep00-cmyk/3tier-app.git')
             }
         }
 
