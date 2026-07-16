@@ -1,39 +1,81 @@
 pipeline {
     agent any
 
+    environment {
+        FRONTEND_HOST = "98.95.65.141"
+        FRONTEND_USER = "ec2-user"
+        TARGET_PATH = "/usr/share/nginx/html/"
+    }
+
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Source') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/tallurisravya6618-pixel/Three-dev-aws.git'
+                    url: 'https://github.com/tammanasandeep00-cmyk/3tier-app.git'
             }
         }
 
-        stage('Check Files') {
+        stage('Verify Repository') {
             steps {
-                sh 'ls -la'
-                sh 'find . -name package.json'
+                sh '''
+                echo "Repository Contents"
+                pwd
+                ls -la
+                '''
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Deploy Frontend') {
             steps {
-                sh 'docker build -t myapp .'
+                sshagent(credentials: ['frontend-key']) {
+
+                    sh '''
+                    scp -o StrictHostKeyChecking=no index.html \
+                    ${FRONTEND_USER}@${FRONTEND_HOST}:${TARGET_PATH}index.html
+                    '''
+
+                }
             }
         }
 
-        stage('Stop Old Container') {
+        stage('Reload Nginx') {
             steps {
-                sh 'docker stop myapp || true'
-                sh 'docker rm myapp || true'
+                sshagent(credentials: ['frontend-key']) {
+
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no ${FRONTEND_USER}@${FRONTEND_HOST} \
+                    "sudo systemctl reload nginx"
+                    '''
+
+                }
             }
         }
 
-        stage('Run Container') {
+        stage('Verify Deployment') {
             steps {
-                sh 'docker run -d --name myapp -p 3000:3000 myapp'
+                sh '''
+                curl -I http://${FRONTEND_HOST}
+                '''
             }
         }
+    }
+
+    post {
+
+        success {
+            echo '================================='
+            echo 'Deployment Successful'
+            echo 'Frontend Updated Successfully'
+            echo '================================='
+        }
+
+        failure {
+            echo '================================='
+            echo 'Deployment Failed'
+            echo 'Check Jenkins Console Output'
+            echo '================================='
+        }
+
     }
 }
