@@ -43,7 +43,7 @@ pipeline {
 
         stage('Reload Nginx') {
             steps {
-                sshagent(credentials: ['frontend-key']) {
+                sshagent(credentials: ['jenkins-key']) {
 
                     sh '''
                     ssh -o StrictHostKeyChecking=no ${FRONTEND_USER}@${FRONTEND_HOST} \
