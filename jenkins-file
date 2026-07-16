@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        FRONTEND_HOST = "98.95.65.141"
+        FRONTEND_HOST = "10.0.3.141"
         FRONTEND_USER = "ec2-user"
         TARGET_PATH = "/usr/share/nginx/html/"
     }
