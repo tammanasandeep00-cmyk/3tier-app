@@ -34,7 +34,7 @@ pipeline {
 
         stage('Deploy Frontend') {
             steps {
-                sshagent(credentials: ['jenkins-key.pem']) {
+                sshagent(credentials: ['jenkins-key']) {
                     sh '''
                     scp -o StrictHostKeyChecking=no index.html \
                     ${FRONTEND_USER}@${FRONTEND_HOST}:/tmp/index.html
@@ -50,7 +50,7 @@ pipeline {
 
         stage('Deploy Backend') {
             steps {
-                sshagent(credentials: ['jenkins-key.pem']) {
+                sshagent(credentials: ['jenkins-key']) {
 
                     sh '''
                     ssh -o StrictHostKeyChecking=no \
