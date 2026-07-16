@@ -80,7 +80,7 @@ pipeline {
         stage('Verify Backend') {
             steps {
                 sh '''
-                curl http://34.202.126.65:5000 
+                curl http://34.202.126.65
                 '''
             }
         }
