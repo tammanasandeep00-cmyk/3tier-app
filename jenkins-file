@@ -90,25 +90,25 @@ pipeline {
     }
 }
 
-stage('Verify Frontend') {
+      stage('Verify Frontend') {
     steps {
         sh '''
-            echo "===================================="
-            echo "Verifying Frontend"
-            echo "===================================="
+             echo "===================================="
+             echo "Verifying Frontend"
+             echo "===================================="
 
-            curl --fail \
-                 --connect-timeout 10 \
-                 --max-time 20 \
-                 http://${FRONTEND_HOST}
+             curl --fail \
+                  --connect-timeout 10 \
+                  --max-time 20 \
+                  http://${FRONTEND_HOST}
 
-            echo ""
-            echo "Frontend verification successful"
-        '''
-    }
-}
+             echo ""
+             echo "Frontend verification successful"
+         '''
+     }
+ }
 
-stage('Verify Backend') {
+      stage('Verify Backend') {
     steps {
         sh '''
             echo "===================================="
@@ -123,8 +123,8 @@ stage('Verify Backend') {
             echo ""
             echo "Backend verification successful"
         '''
-    }
-}
+     }
+ }
 
     post {
 
