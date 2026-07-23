@@ -3,12 +3,12 @@ pipeline {
 
     environment {
         // Frontend
-        FRONTEND_HOST = "10.0.3.141"
+        FRONTEND_HOST = "10.0.1.87"
         FRONTEND_USER = "ec2-user"
         TARGET_PATH = "/usr/share/nginx/html/"
 
         // Backend
-        BACKEND_HOST = "10.0.2.208"
+        BACKEND_HOST = "10.0.1.59"
         BACKEND_USER = "ec2-user"
         BACKEND_PATH = "/home/ec2-user/3tier-app"
     }
