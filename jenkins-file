@@ -90,23 +90,41 @@ pipeline {
     }
 }
 
-        stage('Verify Frontend') {
-            steps {
-                sh '''
-                curl -I http://98.95.65.141
-                '''
-            }
-        }
+stage('Verify Frontend') {
+    steps {
+        sh '''
+            echo "===================================="
+            echo "Verifying Frontend"
+            echo "===================================="
 
-        stage('Verify Backend') {
-            steps {
-                sh '''
-                curl http://34.202.126.65:5000
-                '''
-            }
-        }
+            curl --fail \
+                 --connect-timeout 10 \
+                 --max-time 20 \
+                 http://${FRONTEND_HOST}
 
+            echo ""
+            echo "Frontend verification successful"
+        '''
     }
+}
+
+stage('Verify Backend') {
+    steps {
+        sh '''
+            echo "===================================="
+            echo "Verifying Backend"
+            echo "===================================="
+
+            curl --fail \
+                 --connect-timeout 10 \
+                 --max-time 20 \
+                 http://${BACKEND_HOST}:5000/health
+
+            echo ""
+            echo "Backend verification successful"
+        '''
+    }
+}
 
     post {
 
