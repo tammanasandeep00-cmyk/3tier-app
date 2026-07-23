@@ -54,25 +54,41 @@ pipeline {
     }
 
         stage('Deploy Backend') {
-            steps {
-                sshagent(credentials: ['jenkins-key']) {
+    steps {
+        sshagent(credentials: ['jenkins-key']) {
+            sh '''
+                ssh -o StrictHostKeyChecking=no \
+                ${BACKEND_USER}@${BACKEND_HOST} '
+                    set -e
 
-                    sh """
-                    ssh -o StrictHostKeyChecking=no ${BACKEND_USER}@${BACKEND_HOST} '
-                    cd ${BACKEND_PATH} &&
+                    sudo dnf install -y git nodejs npm
 
-                    git pull origin main &&
+                    if [ ! -d "/home/ec2-user/3tier-app/.git" ]; then
+                        git clone https://github.com/tammanasandeep00-cmyk/3tier-app.git \
+                        /home/ec2-user/3tier-app
+                    else
+                        cd /home/ec2-user/3tier-app
+                        git pull origin main
+                    fi
 
-                    npm install &&
+                    cd /home/ec2-user/3tier-app
 
-                    pm2 restart backend-app &&
+                    npm install
+
+                    sudo npm install -g pm2
+
+                    if pm2 describe backend-app >/dev/null 2>&1; then
+                        pm2 restart backend-app
+                    else
+                        pm2 start server.js --name backend-app
+                    fi
 
                     pm2 save
-                   '
-                    """
-                  }
-                }
-            }
+                '
+            '''
+        }
+    }
+}
 
         stage('Verify Frontend') {
             steps {
